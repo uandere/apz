@@ -4,3 +4,4 @@ members = [
     "logging-service",
     "messages-service",
 ]
+resolver = "2"

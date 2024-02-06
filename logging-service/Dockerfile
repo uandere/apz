@@ -1,22 +1,12 @@
-FROM rust:1.75 as builder
+FROM rust:1.75.0-alpine3.19
 
-RUN USER=root cargo new --bin app
-WORKDIR /app
+ENV ROCKET_ADDRESS=0.0.0.0
+ENV ROCKET_PORT=8001
 
-COPY ./Cargo.toml ./Cargo.toml
-COPY ./Cargo.lock ./Cargo.lock
+WORKDIR /logging-service
+COPY . .
 
-RUN cargo build --release
-RUN rm src/*.rs
+RUN rustup default nightly
+RUN cargo build
 
-COPY ./src ./src
-
-# Build our application
-RUN rm ./target/release/deps/app*
-RUN cargo build --release
-
-# The final base
-FROM debian:buster-slim
-
-COPY --from=builder /app/target/release/app .
-ENTRYPOINT ["./app"]
+CMD ["cargo", "run"]
